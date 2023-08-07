@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-KdTreeNode BuildKdTree(List<VehicleData> vehicles, int depth = 0)
+﻿KdTreeNode BuildKdTree(List<VehicleData> vehicles, int depth = 0)
 {
     if (vehicles.Count == 0)
     {
@@ -101,6 +100,7 @@ VehicleData FindNearestNeighbor(KdTreeNode node, (float Latitude, float Longitud
     return currentBest;
 }
 
+
 string ReadNullTerminatedAsciiString(BinaryReader reader)
 {
     List<byte> bytes = new List<byte>();
@@ -114,6 +114,8 @@ string ReadNullTerminatedAsciiString(BinaryReader reader)
     return System.Text.Encoding.ASCII.GetString(bytes.ToArray());
 }
 
+// There are more efficient file reading algorithms e,g using memory mapped files but since this application is to find
+// an efficient spacial search algorithm I opted for to reduce complexity.
 List<VehicleData> ReadVehicleDataFromDatFile(string filePath)
 {
     List<VehicleData> vehicleDataList = new List<VehicleData>();
@@ -140,8 +142,11 @@ List<VehicleData> ReadVehicleDataFromDatFile(string filePath)
 }
 
 
-List<VehicleData> vehicleRecords = ReadVehicleDataFromDatFile("VehiclePositions.dat");
+List<VehicleData> vehicleRecords = ReadVehicleDataFromDatFile(args.Length == 2 ? args[1] : "C:\\Users\\brandon.ngwenya\\Documents\\MiXTelematics\\Recruitment\\VehiclePositions\\VehiclePositions.dat");
 
+var watch = new System.Diagnostics.Stopwatch();
+
+watch.Start();
 KdTreeNode root = BuildKdTree(vehicleRecords);
 List<(float Latitude, float Longitude)> coordinates = new List<(float, float)>
 {
@@ -162,6 +167,8 @@ foreach (var coordinate in coordinates)
     var closestVehicle = FindNearestNeighbor(root, coordinate, null, double.MaxValue);
     Console.WriteLine($"Closest vehicle to ({coordinate.Latitude}, {coordinate.Longitude}): VehicleId {closestVehicle.VehicleId}");
 }
+watch.Stop();
+Console.WriteLine($"Execution Time: {watch.ElapsedMilliseconds} ms");
 
 public class VehicleData
 {
