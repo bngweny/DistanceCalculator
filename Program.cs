@@ -101,7 +101,47 @@ VehicleData FindNearestNeighbor(KdTreeNode node, (float Latitude, float Longitud
     return currentBest;
 }
 
-List<VehicleData> vehicleRecords = new List<VehicleData>();// LoadVehicleDataFromDatFile(); // Load vehicle records from .dat file
+string ReadNullTerminatedAsciiString(BinaryReader reader)
+{
+    List<byte> bytes = new List<byte>();
+    byte currentByte;
+
+    while ((currentByte = reader.ReadByte()) != 0)
+    {
+        bytes.Add(currentByte);
+    }
+
+    return System.Text.Encoding.ASCII.GetString(bytes.ToArray());
+}
+
+List<VehicleData> ReadVehicleDataFromDatFile(string filePath)
+{
+    List<VehicleData> vehicleDataList = new List<VehicleData>();
+
+    using (FileStream fs = new FileStream(filePath, FileMode.Open))
+    using (BinaryReader reader = new BinaryReader(fs))
+    {
+        while (reader.BaseStream.Position < reader.BaseStream.Length)
+        {
+            VehicleData vehicleData = new VehicleData
+            {
+                VehicleId = reader.ReadInt32(),
+                VehicleRegistration = ReadNullTerminatedAsciiString(reader),
+                Latitude = reader.ReadSingle(),
+                Longitude = reader.ReadSingle(),
+                RecordedTimeUTC = reader.ReadUInt64()
+            };
+
+            vehicleDataList.Add(vehicleData);
+        }
+    }
+
+    return vehicleDataList;
+}
+
+
+List<VehicleData> vehicleRecords = ReadVehicleDataFromDatFile("VehiclePositions.dat");
+
 KdTreeNode root = BuildKdTree(vehicleRecords);
 List<(float Latitude, float Longitude)> coordinates = new List<(float, float)>
 {
