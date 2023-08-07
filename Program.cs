@@ -142,7 +142,7 @@ List<VehicleData> ReadVehicleDataFromDatFile(string filePath)
 }
 
 
-List<VehicleData> vehicleRecords = ReadVehicleDataFromDatFile(args.Length == 2 ? args[1] : "C:\\Users\\brandon.ngwenya\\Documents\\MiXTelematics\\Recruitment\\VehiclePositions\\VehiclePositions.dat");
+List<VehicleData> vehicleRecords = ReadVehicleDataFromDatFile(args.Length == 2 ? args[1] : "VehiclePositions.dat");
 
 var watch = new System.Diagnostics.Stopwatch();
 
